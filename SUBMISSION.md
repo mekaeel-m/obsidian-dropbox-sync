@@ -144,7 +144,7 @@ GitHub, then:
 
 ```bash
 git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/obsidian-dropbox-sync.git
+git remote add origin https://github.com/mekaeel-m/obsidian-dropbox-sync.git
 git push -u origin main
 ```
 
