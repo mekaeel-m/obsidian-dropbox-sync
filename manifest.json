@@ -1,0 +1,10 @@
+{
+  "id": "dropbox-vault-sync",
+  "name": "Dropbox Vault Sync",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Two-way sync of your vault to Dropbox across desktop and mobile, with three-way change detection and conflict copies instead of last-write-wins.",
+  "author": "Mekaeel Malik",
+  "authorUrl": "https://github.com/YOUR_GITHUB_USERNAME",
+  "isDesktopOnly": false
+}

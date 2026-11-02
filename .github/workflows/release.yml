@@ -1,0 +1,51 @@
+# Builds and publishes a release when you push a version tag.
+#
+#   npm version 0.1.1 --no-git-tag-version   # bump package.json
+#   # update manifest.json + versions.json to match
+#   git commit -am "0.1.1" && git tag 0.1.1 && git push --follow-tags
+#
+# The tag MUST equal manifest.json's version with no "v" prefix — Obsidian's
+# updater looks up releases by that exact string.
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+      # Build first: the plugin-load suite exercises the built main.js itself.
+      - run: npm run build
+      - run: npm test
+
+      - name: Check the tag matches manifest.json
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          MANIFEST=$(node -p "require('./manifest.json').version")
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "Tag $TAG does not match manifest version $MANIFEST"
+            exit 1
+          fi
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF#refs/tags/}" \
+            --title "${GITHUB_REF#refs/tags/}" \
+            --generate-notes \
+            main.js manifest.json styles.css

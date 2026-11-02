@@ -1,0 +1,25 @@
+/* Settings tab styling. Kept out of the TypeScript so themes can override it
+   and so the plugin passes Obsidian's review check on inline styles. */
+
+.dropbox-sync-textarea {
+  width: 100%;
+  min-height: 6em;
+  resize: vertical;
+}
+
+.dropbox-sync-wide-input {
+  width: 100%;
+}
+
+/* The raw authorisation URL, shown as a fallback when the button cannot open a
+   browser. Long and unbreakable, so it needs explicit wrapping. */
+.dropbox-sync-url {
+  display: block;
+  margin-top: var(--size-4-2);
+  padding: var(--size-4-2);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+  font-size: var(--font-smallest);
+  word-break: break-all;
+  user-select: all;
+}

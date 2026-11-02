@@ -1,0 +1,27 @@
+{
+  "name": "obsidian-dropbox-sync",
+  "version": "0.1.0",
+  "description": "Two-way Obsidian vault sync via Dropbox",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production",
+    "typecheck": "tsc --noEmit --skipLibCheck",
+    "test": "node tests/build-and-run.mjs",
+    "test:unit": "node tests/build-and-run.mjs unit",
+    "test:integration": "node tests/build-and-run.mjs integration",
+    "test:vault": "node tests/build-and-run.mjs vault",
+    "test:plugin": "npm run build && node tests/build-and-run.mjs plugin",
+    "live:url": "node scripts/run.mjs url",
+    "live:verify": "node scripts/run.mjs verify"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "builtin-modules": "^4.0.0",
+    "esbuild": "^0.24.0",
+    "jsdom": "^25.0.1",
+    "obsidian": "^1.7.2",
+    "typescript": "^5.7.2"
+  }
+}
