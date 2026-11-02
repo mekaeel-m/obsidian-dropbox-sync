@@ -198,12 +198,25 @@ async function verify(code: string): Promise<void> {
 
   console.log("\nListing:");
   const listing = await client.listFolder(SCRATCH);
-  check("list_folder returns the uploaded files", listing.files.length >= 4,
-    `${listing.files.length} files`);
+  // Assert the exact set rather than a count, so this can neither pass by
+  // accident nor fail on arithmetic.
+  const expectedPaths = [
+    `${SCRATCH}/plain.md`,
+    unicodeName,
+    `${SCRATCH}/all-bytes.bin`,
+  ].sort();
+  const listedPaths = listing.files.map((f) => f.path).sort();
+  check(
+    "list_folder returns exactly the uploaded files",
+    JSON.stringify(listedPaths) === JSON.stringify(expectedPaths),
+    `got ${JSON.stringify(listedPaths)}`,
+  );
   check("list_folder returns a cursor", Boolean(listing.cursor));
   const listedUnicode = listing.files.find((f) => f.path === unicodeName);
   check("the unicode file appears in the listing with its name intact",
-    Boolean(listedUnicode), listing.files.map((f) => f.path).join(", "));
+    Boolean(listedUnicode), listedPaths.join(", "));
+  check("listed revs are non-empty", listing.files.every((f) => Boolean(f.rev)));
+  check("listed sizes are reported", listing.files.every((f) => f.size > 0));
 
   console.log("\nListing the app-folder root (the \"\" vs \"/\" rule):");
   try {

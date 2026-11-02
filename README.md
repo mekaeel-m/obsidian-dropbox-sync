@@ -1,12 +1,11 @@
 # Dropbox Vault Sync
 
-> **Status: unreleased.** 308 automated assertions pass across four suites,
-> including an integration suite over real HTTP against a local server that
-> speaks the Dropbox protocol, and a suite that loads the shipped `main.js`
-> itself. Real-Dropbox conformance is checked by `npm run live:url` /
-> `live:verify`, which needs your own app key and one trip through the consent
-> screen. Until you have run that, use a throwaway vault. See
-> [SUBMISSION.md](SUBMISSION.md) for exactly what is and isn't verified.
+> **Status: unreleased, protocol verified.** 308 automated assertions pass
+> across four suites, and the live conformance suite has been run against a
+> real Dropbox account — conflict detection, Unicode round-tripping, binary
+> fidelity and token refresh all confirmed. What is still untested is time in
+> the real Obsidian UI and on real phones, so use a throwaway vault for now.
+> See [SUBMISSION.md](SUBMISSION.md) for exactly what is and isn't verified.
 
 An Obsidian plugin that syncs a vault between desktop and mobile through your own
 Dropbox app folder. Two-way, with genuine change detection and conflict copies

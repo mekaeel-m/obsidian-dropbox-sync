@@ -41,7 +41,11 @@ export function startFakeDropbox() {
 
   const stats = { requests: 0, uploads: 0, downloads: 0, listings: 0, retries: 0 };
 
-  const nextRev = () => `0157${(revCounter++).toString(16).padStart(12, "0")}`;
+  // Real Dropbox revs look like "0165f42141ea6d0000000033ad58c61" — ~31 hex
+  // chars. Nothing treats a rev as anything but an opaque string, but matching
+  // the observed shape keeps the fake honest.
+  const nextRev = () =>
+    `0165f42141ea6d${(revCounter++).toString(16).padStart(17, "0")}`;
 
   /**
    * Serialize to JSON with every non-ASCII character escaped. Real Dropbox does
