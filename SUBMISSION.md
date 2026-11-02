@@ -2,13 +2,33 @@
 
 ## Where this stands
 
-**Verified by automated tests** — 266 assertions across three suites, all green:
+**Verified by automated tests** — 308 assertions across four suites, all green:
 
 | Layer | What it proves |
 | --- | --- |
 | `test:unit` (102) | The full decision table, including the data-loss cases: unseen remote files, resurrect-on-edit, conflict convergence |
 | `test:integration` (116) | Real HTTP: header encoding, download metadata header, Dropbox error payloads, 429/5xx/401 retry, PKCE exchange and refresh, 2 MB binary fidelity |
 | `test:vault` (48) | The real on-disk test vault synced between two devices, byte-identical, with exclusions honoured |
+| `test:plugin` (42) | The **shipped main.js** loaded in a jsdom Obsidian mock: `onload`, settings tab rendering, a sync driven through the plugin class, state surviving a simulated restart, and the mobile code path |
+
+**Verified against real Dropbox** — the app key and all five scopes are
+accepted by the live authorize endpoint (HTTP 302; an invalid key returns 400).
+The rest of the live conformance suite is one consent-screen approval away:
+
+```bash
+npm run live:url -- <app-key>   # prints a URL; approve it, copy the code
+npm run live:verify -- <code>   # runs the live checks, then cleans up
+```
+
+That script drives the production client against real Dropbox and verifies the
+assumptions only Dropbox can confirm: that `token_access_type=offline` really
+returns a refresh token, that `rev` changes on write, that a **stale `rev` is
+rejected with a recognisable 409** (the mechanism that turns a concurrent edit
+into a conflict instead of a silent overwrite), that `Dropbox-API-Arg` escaping
+survives a real round trip with emoji and CJK filenames, that all 256 byte
+values come back intact, that `""` lists the app-folder root, that a missing
+file decodes as `isNotFound`, and that a double delete is idempotent. It creates
+and then deletes `/__livecheck__/` and writes no token to disk.
 
 Also verified by inspection:
 
@@ -21,21 +41,26 @@ Also verified by inspection:
   invariant, the `Dropbox-API-Arg` escaping, and the retry handler each make the
   suites fail, so they have real teeth
 
-**Still unverified — and this is the gate.** Nothing has ever talked to real
-Dropbox. The local server is faithful to the documented protocol and strict
-where Dropbox is strict, but it is still a model of Dropbox, not Dropbox:
+**Still unverified — this is what's left of the gate:**
 
-- real OAuth: the actual consent screen, the real pasted code, real scope
-  enforcement (`missing_scope` if the Permissions tab wasn't configured first)
-- real `rev` semantics and real `server_modified` values
-- real rate-limit thresholds and `Retry-After` values under genuine load
-- real Obsidian UI: the settings tab, the connect modal, the status bar, and
-  how `adapter.write` interacts with Obsidian's own file watcher
-- actual mobile runtime behaviour on iOS and Android
+- **Real-Dropbox conformance** — one `live:verify` run closes this. Until it
+  passes, `rev` semantics and the 409-on-stale-rev behaviour are assumed.
+- **Real Obsidian UI.** The settings tab and connect modal are exercised
+  headlessly in jsdom, which proves they don't throw and render the expected
+  controls, but not that they *look* right or that the consent paste-back feels
+  sane. Needs a human in the app.
+- **How `adapter.write` interacts with Obsidian's file watcher.** The engine
+  writes through the adapter, bypassing the metadata cache; Obsidian's watcher
+  reconciles it. Only observable in the real app.
+- **Actual mobile runtime** on iOS and Android. The mobile *code path* is
+  tested; the mobile *runtime* is not. Nothing in the bundle imports Node or
+  Electron and there is no regex lookbehind, so the known hazards are ruled
+  out — but that is not the same as having run it on a phone.
+- **Real rate-limit thresholds** under genuine load.
 
-Do not submit a **sync** plugin before closing that gap. Reviewers install and
-run submissions, and the failure mode for sync bugs is other people's lost
-notes.
+Reviewers install and run submissions, and the failure mode for sync bugs is
+other people's lost notes. Close the first item, spend real time on the
+middle three, then submit.
 
 ---
 
