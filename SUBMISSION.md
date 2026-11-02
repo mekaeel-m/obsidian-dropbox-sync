@@ -126,17 +126,17 @@ Needs to be a public GitHub repo with the plugin at its **root**
 (`manifest.json` at the top level, not in a subfolder). Required at root:
 `README.md`, `LICENSE`, `manifest.json` — all three present.
 
+The repo is already initialised and committed locally. Create an empty repo on
+GitHub, then:
+
 ```bash
-git init
-git add -A
-git commit -m "Dropbox Vault Sync 0.1.0"
 git branch -M main
 git remote add origin https://github.com/YOUR_GITHUB_USERNAME/obsidian-dropbox-sync.git
 git push -u origin main
 ```
 
 Then replace the placeholder in `manifest.json` → `authorUrl` with your GitHub
-profile URL.
+profile URL, and commit that.
 
 `main.js` is gitignored deliberately: it is a build artifact, attached to
 releases rather than committed.
@@ -151,7 +151,7 @@ git tag 0.1.0
 git push --follow-tags
 ```
 
-`.github/workflows/release.yml` runs all three test suites, builds, verifies the
+`.github/workflows/release.yml` builds, runs all four test suites, verifies the
 tag matches the manifest, and attaches the assets individually (not zipped):
 
 - `main.js`
@@ -235,7 +235,8 @@ Precedent: Remotely Save.
 - [ ] An idle vault reliably logs `plan: nothing to do`
 - [ ] Every Stage 1 scenario confirmed against real Dropbox
 - [ ] Confirmed working on iOS **and** Android, not just desktop
-- [ ] `npm test` green (all three suites), `npm run build` clean
+- [ ] `npm test` green (all four suites), `npm run build` clean
+- [ ] `npm run live:verify` passed against real Dropbox
 - [ ] `authorUrl` placeholder replaced
 - [ ] Release `0.1.0` published with all three assets attached separately
 - [ ] Read the
